@@ -21,7 +21,7 @@ namespace ExitGames.Demos.DemoPunVoice
 
         protected override void Move(float h, float v)
         {
-            this.rigidBody.velocity = v * this.speed * this.transform.forward;
+            this.rigidBody.linearVelocity = v * this.speed * this.transform.forward;
             this.transform.rotation *= Quaternion.AngleAxis(this.movingTurnSpeed * h * Time.deltaTime, Vector3.up);
         }
     }

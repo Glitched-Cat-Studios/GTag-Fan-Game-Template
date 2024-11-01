@@ -131,7 +131,7 @@
                 {
                     firstIterationLeftHand = finalPosition - CurrentLeftHandPosition();
                 }
-                playerRigidBody.velocity = Vector3.zero;
+                playerRigidBody.linearVelocity = Vector3.zero;
 
                 leftHandColliding = true;
             }
@@ -151,7 +151,7 @@
                     firstIterationRightHand = finalPosition - CurrentRightHandPosition();
                 }
 
-                playerRigidBody.velocity = Vector3.zero;
+                playerRigidBody.linearVelocity = Vector3.zero;
 
                 rightHandColliding = true;
             }
@@ -223,11 +223,11 @@
                 {
                     if (denormalizedVelocityAverage.magnitude * jumpMultiplier > maxJumpSpeed)
                     {
-                        playerRigidBody.velocity = denormalizedVelocityAverage.normalized * maxJumpSpeed;
+                        playerRigidBody.linearVelocity = denormalizedVelocityAverage.normalized * maxJumpSpeed;
                     }
                     else
                     {
-                        playerRigidBody.velocity = jumpMultiplier * denormalizedVelocityAverage;
+                        playerRigidBody.linearVelocity = jumpMultiplier * denormalizedVelocityAverage;
                     }
                 }
             }
