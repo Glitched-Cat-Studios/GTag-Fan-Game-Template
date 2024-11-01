@@ -1,8 +1,5 @@
 # GTag Fan Game Template
 
-> [!CAUTION]
-> This branch is not up to date with main, I am just archiving the Unity 2021 version before I upgrade this to Unity 6.
-
  A Gorilla Tag Fan Game Template by Glitched Cat Studios!
 This project was made in 2021.3.29f1, feel free to upgrade the version! (Don't downgrade it, it's a bad idea)
 
