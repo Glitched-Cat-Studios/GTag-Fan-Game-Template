@@ -29,6 +29,7 @@ namespace Photon.Voice
             UserData = 10,
             EventNumber = 11,
             Codec = 12,
+            EventBufferSize = 13,
         }
 
         private VoiceClient voiceClient;
@@ -57,7 +58,8 @@ namespace Photon.Voice
                 { (byte)EventParam.FPS, v.Info.FPS },
                 { (byte)EventParam.KeyFrameInt, v.Info.KeyFrameInt },
                 { (byte)EventParam.UserData, v.Info.UserData },
-                { (byte)EventParam.EventNumber, v.EvNumber }
+                { (byte)EventParam.EventNumber, (byte)0 }, // backward compatibility: old clients read it but use it only for logging
+                { (byte)EventParam.EventBufferSize, v.EventBufferSize }
             };
             return content;
         }
@@ -69,15 +71,20 @@ namespace Photon.Voice
             return content;
         }
 
-        internal object[] buildFrameMessage(byte voiceId, byte evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
+        internal object[] buildFrameMessage(byte voiceId, ushort evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
         {
-            if (evNumber != frNumber)
+            // ushort is not supported by serializer
+            if (evNumber != frNumber) // save 1 byte if numbers match
             {
-                return new object[] { voiceId, evNumber, data, (byte)flags, frNumber };
+                if (evNumber >> 8 != 0) // save 1 byte if evNumber < 256, also backward compatibility
+                {
+                    return new object[] { voiceId, (byte)evNumber, data, (byte)flags, frNumber, (byte)(evNumber >> 8) };
+                }
+                return new object[] { voiceId, (byte)evNumber, data, (byte)flags, frNumber };
             }
             else
             {
-                return new object[] { voiceId, evNumber, data, (byte)flags }; // save 1 byte if numbers match
+                return new object[] { voiceId, (byte)evNumber, data, (byte)flags };
             }
         }
 
@@ -103,17 +110,21 @@ namespace Photon.Voice
             else
             {
                 byte voiceId = (byte)content[0];
-                byte evNumber = (byte)content[1];
+                ushort evNumber = (byte)content[1];
                 byte[] receivedBytes = (byte[])content[2];
                 FrameFlags flags = 0;
                 if (content.Length > 3)
                 {
                     flags = (FrameFlags)content[3];
                 }
-                byte frNumber = evNumber;
+                byte frNumber = (byte)evNumber;
                 if (content.Length  > 4)
                 {
                     frNumber = (byte)content[4];
+                }
+                if (content.Length > 5)
+                {
+                    evNumber += (ushort)((byte)content[5] << 8);
                 }
                 var buffer = new FrameBuffer(receivedBytes, flags, frNumber);
                 this.voiceClient.onFrame( playerId, voiceId, evNumber, ref buffer, isLocalPlayer);
@@ -126,10 +137,10 @@ namespace Photon.Voice
             foreach (var el in (object[])payload)
             {
                 var h = (Dictionary<byte, Object>)el;
-                var voiceId = (byte)h[(byte)EventParam.VoiceId];
-                var eventNumber = (byte)h[(byte)EventParam.EventNumber];
+                byte voiceId = (byte)h[(byte)EventParam.VoiceId];
+                h.TryGetValue((byte)EventParam.EventBufferSize, out var eventBufferSize); // may be not present in the info from old client
                 var info = createVoiceInfoFromEventPayload(h);
-                voiceClient.onVoiceInfo(channelId, playerId, voiceId, eventNumber, info);
+                voiceClient.onVoiceInfo(channelId, playerId, voiceId, eventBufferSize == null ? 0 : (int)eventBufferSize, info);
             }
         }
 

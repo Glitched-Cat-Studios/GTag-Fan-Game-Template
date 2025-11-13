@@ -81,7 +81,7 @@ namespace Photon.Voice.FMOD
                     return;
                 }
 
-                res = this.coreSystem.recordStart(0, sound, true);
+                res = this.coreSystem.recordStart(device, sound, true);
 
                 if (res != FMODLib.RESULT.OK)
                 {
@@ -131,7 +131,7 @@ namespace Photon.Voice.FMOD
                 return false;
             }
             uint micPos;
-            FMODLib.RESULT res = this.coreSystem.getRecordPosition(0, out micPos);
+            FMODLib.RESULT res = this.coreSystem.getRecordPosition(device, out micPos);
             if (res != FMODLib.RESULT.OK)
             {
                 Error = "failed to getRecordPosition: " + res;

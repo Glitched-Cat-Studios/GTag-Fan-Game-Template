@@ -137,7 +137,7 @@ namespace Photon.Voice
             /// <summary>Set the callback function used for pushing data</summary>
             /// <param name="callback">Callback function to use</param>
             /// <param name="bufferFactory">Buffer factory used to create the buffer that is pushed to the callback</param>
-            public void SetCallback(Action<T[]> callback, ObjectFactory<T[], int> bufferFactory)
+            public void SetCallback(Action<T[]> callback, ObjectFactory<T[], int> bufferFactory, int optimalFrameSize)
             {
                 if (timer != null)
                 {

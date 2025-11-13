@@ -82,7 +82,7 @@ namespace Photon.Voice.Unity
             }
         }
 
-        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory)
+        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory, int optimalFrameSize)
         {
             onRead.OnAudioFrame += (buf, ch) => callback(buf);
         }

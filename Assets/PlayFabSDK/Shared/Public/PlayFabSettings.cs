@@ -65,9 +65,9 @@ namespace PlayFab
         /// </summary>
         public static readonly PlayFabAuthenticationContext staticPlayer = new PlayFabAuthenticationContext();
 
-        public const string SdkVersion = "2.195.240524";
+        public const string SdkVersion = "2.225.251107";
         public const string BuildIdentifier = "adobuild_unitysdk_167";
-        public const string VersionString = "UnitySDK-2.195.240524";
+        public const string VersionString = "UnitySDK-2.225.251107";
         public static string EngineVersion = UnityEngine.Application.unityVersion;
         public static string PlatformString;
 
@@ -111,9 +111,7 @@ namespace PlayFab
 
         /// <summary> The name of a customer vertical. This is only for customers running a private cluster.  Generally you shouldn't touch this </summary>
         internal static string VerticalName { get { return staticSettings.VerticalName; } set { staticSettings.VerticalName = value; } }
-#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR || ENABLE_PLAYFAB_SECRETKEY
-        public static string DeveloperSecretKey { get { return staticSettings.DeveloperSecretKey; } set { staticSettings.DeveloperSecretKey = value; } }
-#endif
+
         /// <summary> Set this to true to prevent hardware information from leaving the device </summary>
         public static bool DisableDeviceInfo { get { return staticSettings.DisableDeviceInfo; } set { staticSettings.DisableDeviceInfo = value; } }
         /// <summary> Set this to true to prevent focus change information from leaving the device </summary>

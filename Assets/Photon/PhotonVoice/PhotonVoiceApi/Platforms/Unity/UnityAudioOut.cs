@@ -20,8 +20,10 @@ namespace Photon.Voice.Unity
         override public void OutCreate(int frequency, int channels, int bufferSamples)
         {
             this.source.loop = true;
-            // using streaming clip leads to too long delays
-            this.clip = AudioClip.Create("UnityAudioOut", bufferSamples, channels, frequency, false);
+            // Streaming clips produce too long delays, we use normal clips and SetData() to update them.
+            // The newly created clip may contain non-zero data (e.g. from previously created clip initialized with pcmreadercallback).
+            // Initialize it with zeros in pcmreadercallback instead of SetData to avoid allocation of a large 0 array.
+            this.clip = AudioClip.Create("UnityAudioOut", bufferSamples, channels, frequency, false, b => System.Array.Clear(b, 0, b.Length));
             this.source.clip = clip;
         }
 

@@ -105,13 +105,12 @@ namespace Photon.Voice.Unity
 
         // Supposed to be called once at voice initialization.
         // Otherwise recreate native object (instead of adding 'set callback' method to java interface)
-        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory)
+        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory, int optimalFrameSize)
         {
             if (Error == null)
             {
-                var voiceFrameSize = bufferFactory.Info;
                 // setting to voice FrameSize lets to avoid framing procedure
-                javaBuf = AndroidJNI.NewGlobalRef(AndroidJNI.NewShortArray(voiceFrameSize));
+                javaBuf = AndroidJNI.NewGlobalRef(AndroidJNI.NewShortArray(optimalFrameSize));
                 this.callback.SetCallback(callback, javaBuf);
                 var meth = AndroidJNI.GetMethodID(audioIn.GetRawClass(), "SetBuffer", "([S)Z");
                 bool ok = AndroidJNI.CallBooleanMethod(audioIn.GetRawObject(), meth, new jvalue[] { new jvalue() { l = javaBuf } });

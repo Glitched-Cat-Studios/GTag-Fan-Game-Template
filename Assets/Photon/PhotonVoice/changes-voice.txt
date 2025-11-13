@@ -1,5 +1,77 @@
 Photon Voice 2 Change Log
 
+v2.59 (May 13, 2025)
+   PUN2: v2.49 (PUN2.49)
+   RT/lib: v4.1.8.15
+   PhotonVoiceApi: revision 7933
+   Unity: 2019.4.39 or higher
+   UPDATED: Photon3Unity3D.dll, Photon Realtime (LoadBalancing), Photon Chat to v4.1.8.15
+Core:   
+   ADDED: ByteStreamEncoder and ByteStreamDecoder for steaming byte buffers without processing
+   ADDED: Custom1 - Custom9 items in Codec enum for user codec implementations
+WebGL:
+   BREAKING: panner node rolloff parameters removed from WebAudioAudioOut() constructor and set via new SetRefDistance() and SetMaxDistance() methods from Update() (similar to volume parameter)
+   FIXED: TimeWorker crash during stop() call
+PUN:
+   MINOR: TransmitEnabled warning removed from PhotonVoiceView
+Other:
+   ADDED: DemoDataStream
+
+v2.58 (March 03, 2025)
+   PUN2: v2.49 (PUN2.49)
+   RT/lib: v4.1.8.14
+   PhotonVoiceApi: revision 7853
+   Unity: 2019.4.39 or higher
+   UPDATED: Photon3Unity3D.dll, Photon Realtime (LoadBalancing), Photon Chat to v4.1.8.14, PUN to v2.49
+Core:
+   ADDED: Codec enum extension methods IsAudio() and IsVideo() in a new Voice.Utility static class
+   ADDED: AudioOutDelayControl.Delay property: a simplified delay API
+   FIXED: noticeable audio playback start delay when resuming transmission after intentional pause (by sender or with Interest Groups): RemoteVoice considers an incoming frame as current rather than late if the gap with the previous frame is large and continues playback instead of waiting for a "valid" frame
+   FIXED: possible noisy logging before the 1st packet arrives caused by useless ring buffer scan: decodeQueue() call moved after the synchronization wait call in decodeThread
+   FIXED: AudioOutDelayControl.Service() clears the buffer correctly even if it's called rarely (once per sec. for WebGl)
+   CHANGED: AudioOutDelayControl buffer size is at least 2 sec. (for WebGL)
+   FIXED: AudioOutDelayControl buffer minimal size check used the wrong value and never worked
+Unity:
+   FIXED: VoiceComponentImpl.Level always returned 0
+   FIXED: the scene marked as dirty after updating VoiceLogger.LogLevel from another inspector in Editor to not loose the change
+   FIXED: UnityAudioOut zeroes the clip after creation because it may contain non-zero data (e.g. from previously created clip initialized with pcmreadercallback).
+Android:
+   CHANGED: audio capture session is initialized and destroyed asynchronously to prevent ui freezes
+WebGL:
+   FIXED: audio plays without interruption in background browser page due to Photon Realtime update and the following change
+   CHANGED: VoiceConnection incoming packet dispatch call is triggered frequently enough by a worker, not in FixedUpdate() which is called only once per sec. in background browser page
+iOS and Mac:
+   CHANGED: AudioIn libraries set other apps ducking mode to minimum
+
+v2.57 (December 13, 2024)
+   PUN2: v2.45 (PUN2.45) 
+   RT/lib: v4.1.8.8
+   PhotonVoiceApi: revision 7794
+   Unity: 2019.4.39 or higher
+WebGL:
+   ADDED: WebAudioAudioOut spatial ref and max distances control via AudioSource min and max distances
+FMOD:
+   FIXED: FMOD always used device 0 for recording
+Fusion:
+   FIXED: `LogLevel` related errors after importing Fusion 2.0.3
+
+v2.56 (August 19, 2024)
+   PUN2: v2.45 (PUN2.45) 
+   RT/lib: v4.1.8.8
+   PhotonVoiceApi: revision 7650
+   Unity: 2019.4.39 or higher
+   UPDATED: Photon3Unity3D.dll, Photon Realtime (LoadBalancing), Photon Chat to v4.1.8.8
+Unity:
+   FIXED: VoiceFollowClient leaves the room instead of disconnecting the server when follows the "not in room" leader's state: disconnect left the player in the room in an inactive state preventing subsequent connection with the same UserId
+   CHNAGED: LoggerImpl cashes VoiceLogger.LogLevel in SetVoiceLogger() and Log() and uses the cashed value if Log() is called after the VoiceLogger instance is destroyed
+   NOTE: this mitigates but not completely fixes the wrong logging level during scene unload if the global VoiceLogger is destroyed earlier than the logging component; use local VoiceLogger instances to avoid this
+   CHANGED: do not create a voice settings file in the voice install sub-folder if voice is installed in the Packages folder (and then potentially not writable)
+FMOD:
+   ADDED: SpeakerFMOD event is always attached to the game object to support a spatializer in case it's attached to the event
+WebGL:
+   FIXED: WebAudioMicIn allocated a native buffer for captured audio 4 times larger than required
+   FIXED: WebGL Speaker did not negate its position 'y' component
+
 v2.55 (February 26, 2024)
    PUN2: v2.45 (PUN2.45) 
    RT/lib: v4.1.8.0
@@ -7,7 +79,7 @@ v2.55 (February 26, 2024)
    Unity: 2019.4.39 or higher
    UPDATED: Photon3Unity3D.dll, Photon Realtime (LoadBalancing) to v4.1.8.0
    UPDATED: PUN to v2.45
-   ADDED: VisionOS support (Opus and WebRTC Audio libraries)
+   ADDED: visionOS support (Opus and WebRTC Audio libraries)
 Core:
    BREAKING: ILogger.Log*() methods replaced with LogLevel enum and single Log() method accepting logging level
    BREAKING: added ILogger.Level property, that Voice code can check to avoid unnecessary Log() methods calls

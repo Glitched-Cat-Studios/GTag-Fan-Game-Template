@@ -28,7 +28,7 @@ namespace Photon.Voice
         bool reverseStreamThreadRunning = false;
         Queue<short[]> reverseStreamQueue = new Queue<short[]>();
         AutoResetEvent reverseStreamQueueReady = new AutoResetEvent(false);
-        FactoryPrimitiveArrayPool<short> reverseBufferFactory;
+        ArrayPool<short> reverseBufferFactory;
 
         public int AECStreamDelayMs { set { if (reverseStreamDelayMs != value) { reverseStreamDelayMs = value; if (proc != IntPtr.Zero) setParam(Param.REVERSE_STREAM_DELAY_MS, value); } } }
         public bool AEC
@@ -190,7 +190,7 @@ namespace Photon.Voice
                     {
                         reverseFramer = new Framer<float>(size);
                     }
-                    reverseBufferFactory = new FactoryPrimitiveArrayPool<short>(REVERSE_BUFFER_POOL_CAPACITY, "WebRTCAudioProcessor Reverse Buffers", size);
+                    reverseBufferFactory = new ArrayPool<short>(REVERSE_BUFFER_POOL_CAPACITY, "WebRTCAudioProcessor Reverse Buffers", size);
 
                     logger.Log(LogLevel.Info, "[PV] WebRTCAudioProcessor Init reverse stream: frame size {0}, reverseSamplingRate {1}, reverseChannels {2}", size, reverseSamplingRate, reverseChannels);
 

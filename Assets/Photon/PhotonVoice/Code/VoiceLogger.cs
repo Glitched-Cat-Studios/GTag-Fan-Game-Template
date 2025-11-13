@@ -74,7 +74,13 @@ namespace Photon.Voice.Unity
                 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(vl.gameObject.scene);
             }
 
-            vl.LogLevel = (LogLevel)UnityEditor.EditorGUILayout.EnumPopup("Log Level", vl.LogLevel);
+            var newLevel = (LogLevel)UnityEditor.EditorGUILayout.EnumPopup("Log Level", vl.LogLevel);
+            if (newLevel != vl.LogLevel)
+            {
+                vl.LogLevel = newLevel;
+                // the Editor does not trace changes in another component automatically and needs a hint
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(vl.gameObject.scene);
+            }
         }
 #endif
     }

@@ -168,7 +168,8 @@ namespace Photon.Voice
             else
             {
                 var frag = Flags & FrameFlags.MaskFrag;
-                return "#" + FrameNum + " " + frag + (frag == FrameFlags.FragNotEnd ? " c#" + array[offset + count - 1] : "") + (IsFEC ? " FEC" : "") + " r#" + refCnt;
+                var part = Flags & FrameFlags.MaskPart;
+                return "#" + FrameNum + " " + part + " " + frag + (frag == FrameFlags.FragNotEnd ? " c#" + array[offset + count - 1] : "") + (IsFEC ? " FEC" : "") + " r#" + refCnt;
             }
         }
     }

@@ -55,7 +55,7 @@ namespace Photon.Voice.MacOS
 
         // Supposed to be called once at voice initialization.
         // Otherwise recreate native object (instead of adding 'set callback' method to native interface)
-        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory)
+        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory, int optimalFrameSize)
         {
             this.bufferFactory = bufferFactory;
             this.pushCallback = callback;

@@ -10,6 +10,7 @@ namespace Photon.Voice.Fusion
     using UnityEngine;
     using Unity;
     using System;
+    using LogLevel = Photon.Voice.LogLevel;
 
     [AddComponentMenu("Photon Voice/Fusion/Fusion Voice Client")]
     [RequireComponent(typeof(NetworkRunner))]

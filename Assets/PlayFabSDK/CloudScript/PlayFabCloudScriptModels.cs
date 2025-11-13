@@ -496,6 +496,10 @@ namespace PlayFab.CloudScriptModels
         /// </summary>
         public object FunctionResult;
         /// <summary>
+        /// The size in bytes of the object returned from the function, if any
+        /// </summary>
+        public int? FunctionResultSize;
+        /// <summary>
         /// Flag indicating if the FunctionResult was too large and was subsequently dropped from this event.
         /// </summary>
         public bool? FunctionResultTooLarge;
@@ -701,7 +705,10 @@ namespace PlayFab.CloudScriptModels
         OpenIdConnect,
         Apple,
         NintendoSwitchAccount,
-        GooglePlayGames
+        GooglePlayGames,
+        XboxMobileStore,
+        King,
+        BattleNet
     }
 
     [Serializable]

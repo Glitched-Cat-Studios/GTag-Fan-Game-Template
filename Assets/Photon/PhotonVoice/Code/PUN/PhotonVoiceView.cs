@@ -82,10 +82,6 @@ namespace Photon.Voice.PUN
                 }
                 else
                 {
-                    if (!this.RecorderInUse.TransmitEnabled)
-                    {
-                        this.Logger.Log(LogLevel.Warning, "PhotonVoiceView.RecorderInUse.TransmitEnabled is false, don't forget to set it to true to enable transmission.");
-                    }
                     if (!this.RecorderInUse.isActiveAndEnabled)
                     {
                         this.Logger.Log(LogLevel.Warning, "PhotonVoiceView.RecorderInUse may not work properly if recorder is disabled or attached to an inactive GameObject.");

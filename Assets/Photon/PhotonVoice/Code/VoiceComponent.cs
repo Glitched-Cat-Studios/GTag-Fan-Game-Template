@@ -45,6 +45,7 @@ namespace Photon.Voice.Unity
         class LoggerImpl : Voice.ILogger
         {
             VoiceLogger voiceLogger;
+            LogLevel voiceLoggerLastLevel; // used if voiceLogger is already destroyed during scene unload
             Object obj;
             // name cache required because obj.name is available only on the main thread
             string objName;
@@ -53,6 +54,7 @@ namespace Photon.Voice.Unity
             public void SetVoiceLogger(VoiceLogger voiceLogger, Object obj, string tag)
             {
                 this.voiceLogger = voiceLogger;
+                this.voiceLoggerLastLevel = voiceLogger.LogLevel;
                 this.obj = obj;
                 this.tag = tag;
             }
@@ -62,7 +64,7 @@ namespace Photon.Voice.Unity
                 objName = n;
             }
 
-            public LogLevel Level { get; set; }
+            public LogLevel Level => voiceLogger ? voiceLogger.LogLevel : voiceLoggerLastLevel;
             public void Log(LogLevel level, string fmt, params object[] args)
             {
                 if (voiceLogger != null)
@@ -71,10 +73,14 @@ namespace Photon.Voice.Unity
                     {
                         UnityLogger.Log(level, obj, tag, objName, fmt, args);
                     }
+                    voiceLoggerLastLevel = voiceLogger.LogLevel;
                 }
                 else
                 {
-                    UnityLogger.Log(level, obj, tag, objName, fmt, args);
+                    if (voiceLoggerLastLevel >= level)
+                    {
+                        UnityLogger.Log(level, obj, tag, objName, fmt, args);
+                    }
                 }
             }
         }

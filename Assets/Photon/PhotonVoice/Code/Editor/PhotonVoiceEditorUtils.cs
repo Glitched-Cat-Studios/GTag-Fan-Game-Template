@@ -115,6 +115,8 @@ namespace Photon.Voice.Unity.Editor
         [MenuItem("Window/Photon Voice/Enable Video", false, 4)]
         private static void EnableVideo()
         {
+            UnityEngine.Debug.Log("Enabling Photon Video (setting define '" + PHOTON_VIDEO_DEFINE_SYMBOL + "').");
+
             Realtime.PhotonEditorUtils.AddScriptingDefineSymbolToAllBuildTargetGroups(PHOTON_VIDEO_DEFINE_SYMBOL);
             TriggerRecompile();
         }

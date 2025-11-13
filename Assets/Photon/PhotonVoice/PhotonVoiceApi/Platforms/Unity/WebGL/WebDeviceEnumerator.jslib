@@ -11,34 +11,34 @@ mergeInto(LibraryManager.library, {
                     
                     console.info('[PV] PhotonVoice_WebRTC_EnumerateDevices res:', res);
 
-                    const ptr = Module._malloc(res.length * 4);
+                    const ptr = _malloc(res.length * 4);
                     for (let i = 0; i < res.length; i++) {
                         const s = res[i];
                         const l = s.length * 4 + 1;
-                        const sPtr = Module._malloc(l);
+                        const sPtr = _malloc(l);
                         stringToUTF8(s, sPtr, l)
                         Module.HEAPU32[ptr / 4 + i] = sPtr;
                     }
 
-                    Module.dynCall_viiii(resultCallback, requestId, 0, ptr, res.length);
+                    {{{ makeDynCall('viiii', 'resultCallback') }}}(requestId, 0, ptr, res.length);
 
                     for (let i = 0; i < res.length; i++) {
-                        Module._free(ptr[i]);
+                        _free(ptr[i]);
                     }
-                    Module._free(ptr);
+                    _free(ptr);
                 })
                 .catch(function(err) {
                     console.error('[PV] PhotonVoice_WebRTC_EnumerateDevices enumerateDevices error: ' + err);
-                    Module.dynCall_viiii(resultCallback, requestId, 1, 0, 0);
+                    {{{ makeDynCall('viiii', 'resultCallback') }}}(requestId, 1, 0, 0);
                 });
             })
             .catch(function(err) {
                 console.error('[PV] PhotonVoice_WebRTC_EnumerateDevices enumerateDevices permission error: ' + err);
-                Module.dynCall_viiii(resultCallback, requestId, 2, 0, 0);
+                {{{ makeDynCall('viiii', 'resultCallback') }}}(requestId, 2, 0, 0);
             });
         } else {
             console.error('[PV] PhotonVoice_WebRTC_EnumerateDevices error: ' + 'enumerateDevices not supported on your browser!');
-            Module.dynCall_viiii(resultCallback, requestId, 3, 0, 0);
+            {{{ makeDynCall('viiii', 'resultCallback') }}}(requestId, 3, 0, 0);
         }
     },
 });

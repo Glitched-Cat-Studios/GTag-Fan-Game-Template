@@ -137,7 +137,7 @@ namespace Photon.Voice
                 throw new Exception(LogPrefix + ": non 0 frame size required for framed stream");
             }
 
-            int optimalInFrameSize = voiceInfo.FrameSize;
+            OptimalSourceFrameSize = voiceInfo.FrameSize;
             if (voiceInfo.SamplingRate != 0 && inSampleRate != voiceInfo.SamplingRate)
             {
                 if (voiceInfo.SamplingRate <= 0 || inSampleRate / voiceInfo.SamplingRate > 10 || voiceInfo.SamplingRate / inSampleRate > 10)
@@ -146,7 +146,7 @@ namespace Photon.Voice
                 }
                 const bool INTERPOLATE = true;
                 this.framer = new FramerResampler<T>(voiceInfo.FrameSize, voiceInfo.Channels, voiceInfo.SamplingRate, inSampleRate, INTERPOLATE);
-                optimalInFrameSize = voiceInfo.FrameSize * inSampleRate / voiceInfo.SamplingRate;
+                OptimalSourceFrameSize = voiceInfo.FrameSize * inSampleRate / voiceInfo.SamplingRate;
                 this.voiceClient.logger.Log(LogLevel.Warning, "[PV] Local voice #" + this.id + " audio source frequency " + inSampleRate + " and encoder sampling rate " + voiceInfo.SamplingRate + " do not match. Resampling will occur before encoding (FramerResampler" + (INTERPOLATE ? ", interp" : "") +  ").");
             }
             else // if no resampling required
@@ -155,16 +155,18 @@ namespace Photon.Voice
                 this.voiceClient.logger.Log(LogLevel.Info, "[PV] Local voice #" + this.id + " audio source frequency and encoder sampling rate are the same " + voiceInfo.SamplingRate + ". No resampling required (Framer).");
             }
 
-            this.bufferFactory = new FactoryPrimitiveArrayPool<T>(DATA_POOL_CAPACITY, Name + " Data", optimalInFrameSize);
+            this.bufferFactory = new ArrayPoolSet<T>(DATA_POOL_CAPACITY, Name, OptimalSourceFrameSize, 5);
         }
 
         bool dataEncodeThreadStarted;
         Queue<T[]> pushDataQueue = new Queue<T[]>();
         AutoResetEvent pushDataQueueReady = new AutoResetEvent(false);
 
+        public int OptimalSourceFrameSize { get; private set; }
+
         /// <summary><see cref="PushData(T[])" and <see cref="PushDataAsync(T[])" callers should use this factory for optimal performance/>/>.</summary>
-        public FactoryPrimitiveArrayPool<T> BufferFactory { get { return bufferFactory; } }
-        FactoryPrimitiveArrayPool<T> bufferFactory;
+        public ObjectFactory<T[], int> BufferFactory { get { return bufferFactory; } }
+        ObjectFactory<T[], int> bufferFactory;
 
         /// <summary>Wether this LocalVoiceFramed has capacity for more data buffers to be pushed asynchronously.</summary>
         public bool PushDataAsyncReady { get { lock (pushDataQueue) return pushDataQueue.Count < DATA_POOL_CAPACITY - 1; } } // 1 slot for buffer currently processed and not contained either by pool or queue

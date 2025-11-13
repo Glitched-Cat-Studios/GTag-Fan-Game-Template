@@ -29,7 +29,9 @@ mergeInto(LibraryManager.library, {
             // window.addEventListener('mousedown', Module.PhotonVoice_WebAudioAudioOut_Global.ResumeAudioContext);
             // window.addEventListener('touchstart', Module.PhotonVoice_WebAudioAudioOut_Global.ResumeAudioContext);
             
-            const playWorkerFoo = function() {
+            const playWorkerFoo = // minification-friendly "to string conversion", comment out `s for dev
+            `
+            function() {
                 var buffers; // array of ring buffers per channels
                 var bufferLen;
                 var channels;
@@ -103,6 +105,7 @@ mergeInto(LibraryManager.library, {
                 
                 registerProcessor('photon-voice-play-processor', PlayProcessor);
             }
+            `
 
             let ws = playWorkerFoo.toString();
             ws = ws.substring(ws.indexOf("{") + 1, ws.lastIndexOf("}"));
@@ -127,9 +130,8 @@ mergeInto(LibraryManager.library, {
             let spatialBlendNode1;
             let spatialBlendNode2;
             if (spatialBlend > 0) {
-                const options = {
-                }
-                pannerNode = new PannerNode(audioContext, options);
+                pannerNode = new PannerNode(audioContext);
+                pannerNode.distanceModel = "linear";
                 
                 if (spatialBlend < 1) {
                     spatialBlendNode1 = audioContext.createGain();
@@ -239,7 +241,27 @@ mergeInto(LibraryManager.library, {
             return 1;
         }
     },
-    
+
+    PhotonVoice_WebAudioAudioOut_SetRefDistance: function(handle, x) {
+        const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
+        if (ctx && ctx.pannerNode) {
+            ctx.pannerNode.refDistance = x;
+            return 0;
+        } else {
+            return 1;
+        }
+    },
+
+    PhotonVoice_WebAudioAudioOut_SetMaxDistance: function(handle, x) {
+        const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
+        if (ctx && ctx.pannerNode) {
+            ctx.pannerNode.maxDistance = x;
+            return 0;
+        } else {
+            return 1;
+        }
+    },
+
     PhotonVoice_WebAudioAudioOut_SetListenerPosition: function(handle, x, y, z) {
         const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
         if (ctx) {
@@ -249,7 +271,7 @@ mergeInto(LibraryManager.library, {
             return 1;
         }
     },
-    
+
     PhotonVoice_WebAudioAudioOut_SetListenerOrientation: function(handle, fx, fy, fz, ux, uy, uz) {
         const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
         if (ctx) {
@@ -259,7 +281,7 @@ mergeInto(LibraryManager.library, {
             return 1;
         }
     },
-    
+
     PhotonVoice_WebAudioAudioOut_SetPosition: function(handle, x, y, z) {
         const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
         if (ctx && ctx.pannerNode) {
@@ -269,7 +291,7 @@ mergeInto(LibraryManager.library, {
             return 1;
         }
     },
-    
+
     PhotonVoice_WebAudioAudioOut_Stop: function(handle) {
         const ctx = Module.PhotonVoice_WebAudioAudioOut_Global.Sources.get(handle);
         if (ctx) {

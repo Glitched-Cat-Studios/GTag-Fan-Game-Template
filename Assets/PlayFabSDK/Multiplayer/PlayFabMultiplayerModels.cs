@@ -95,7 +95,9 @@ namespace PlayFab.MultiplayerModels
         CentralIndia,
         UaeNorth,
         UkSouth,
-        SwedenCentral
+        SwedenCentral,
+        CanadaCentral,
+        MexicoCentral
     }
 
     public enum AzureVmFamily
@@ -109,6 +111,7 @@ namespace PlayFab.MultiplayerModels
         Dasv4,
         Dav4,
         Dadsv5,
+        Dadsv6,
         Eav4,
         Easv4,
         Ev4,
@@ -163,6 +166,10 @@ namespace PlayFab.MultiplayerModels
         Standard_D4ads_v5,
         Standard_D8ads_v5,
         Standard_D16ads_v5,
+        Standard_D2ads_v6,
+        Standard_D4ads_v6,
+        Standard_D8ads_v6,
+        Standard_D16ads_v6,
         Standard_E2a_v4,
         Standard_E4a_v4,
         Standard_E8a_v4,
@@ -1188,6 +1195,12 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public OwnerMigrationPolicy? OwnerMigrationPolicy;
         /// <summary>
+        /// A setting that controls whether only the lobby owner can send invites to join the lobby. When true, only the lobby owner
+        /// can send invites. When false or not specified, any member can send invites. Defaults to false if not specified.
+        /// Restricted to client owned lobbies.
+        /// </summary>
+        public bool RestrictInvitesToLobbyOwner;
+        /// <summary>
         /// The public key-value pairs which allow queries to differentiate between lobbies. Queries will refer to these key-value
         /// pairs in their filter and order by clauses to retrieve lobbies fitting the specified criteria. At most 30 key-value
         /// pairs may be stored here. Keys are of the format string_key1, string_key2 ... string_key30 for string values, or
@@ -1717,7 +1730,8 @@ namespace PlayFab.MultiplayerModels
         SameEntityLoginProvider,
         DifferentEntityLoginProvider,
         AnyEntityLoginProvider,
-        AnyPlatformTypeAndEntityLoginProvider
+        AnyPlatformTypeAndEntityLoginProvider,
+        OnlyServers
     }
 
     [Serializable]
@@ -2798,6 +2812,12 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public OwnerMigrationPolicy? OwnerMigrationPolicy;
         /// <summary>
+        /// A setting that controls whether only the lobby owner can send invites to join the lobby. When true, only the lobby owner
+        /// can send invites. When false or not specified, any member can send invites. Defaults to false if not specified.
+        /// Restricted to client owned lobbies.
+        /// </summary>
+        public bool RestrictInvitesToLobbyOwner;
+        /// <summary>
         /// A setting to control whether connections are used. Defaults to true. When true, notifications are sent to subscribed
         /// players, disconnect detection removes connectionHandles, only owner migration policies using connections are allowed,
         /// and lobbies must have at least one connected member to be searchable or be a server hosted lobby with a connected
@@ -3616,6 +3636,11 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public string PubSubConnectionHandle;
         /// <summary>
+        /// A setting that controls lobby invites. When true only owners can invite new players, when false all members area allowed
+        /// to invite.
+        /// </summary>
+        public bool RestrictInvitesToLobbyOwner;
+        /// <summary>
         /// Search data.
         /// </summary>
         public Dictionary<string,string> SearchData;
@@ -4067,7 +4092,7 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public string DirectPeerConnectivityOptions;
         /// <summary>
-        /// The maximum number of devices allowed to connect to the network. Must be between 1 and 32, inclusive.
+        /// The maximum number of devices allowed to connect to the network. Must be between 1 and 128, inclusive.
         /// </summary>
         public uint MaxDevices;
         /// <summary>
@@ -4304,8 +4329,8 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public List<string> PreferredRegions;
         /// <summary>
-        /// Data encoded as a string that is passed to the game server when requested. This can be used to to communicate
-        /// information such as game mode or map through the request flow.
+        /// Data encoded as a string that is passed to the game server when requested. This can be used to communicate information
+        /// such as game mode or map through the request flow. Maximum size is 8KB
         /// </summary>
         public string SessionCookie;
         /// <summary>
@@ -4386,6 +4411,10 @@ namespace PlayFab.MultiplayerModels
         /// A guid string party ID created track the party session over its life.
         /// </summary>
         public string PartyId;
+        /// <summary>
+        /// A player entity Id on behalf of whom the request is being made.
+        /// </summary>
+        public string PlayFabId;
         /// <summary>
         /// The preferred regions to request a party session from. The party service will iterate through the regions in the
         /// specified order and allocate a party session from the first one that is available.
@@ -4543,6 +4572,10 @@ namespace PlayFab.MultiplayerModels
         /// The server's region.
         /// </summary>
         public string Region;
+        /// <summary>
+        /// The string server ID of the multiplayer server generated by PlayFab.
+        /// </summary>
+        public string ServerId;
     }
 
     [Serializable]
@@ -4754,7 +4787,8 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public string PubSubConnectionHandle;
         /// <summary>
-        /// The name of the resource to subscribe to.
+        /// The name of the resource to subscribe to. For LobbyChange subscriptions this is the lobbyId. For LobbyInvite
+        /// subscriptions this should always be "@me".
         /// </summary>
         public string ResourceId;
         /// <summary>
@@ -4762,7 +4796,9 @@ namespace PlayFab.MultiplayerModels
         /// </summary>
         public uint SubscriptionVersion;
         /// <summary>
-        /// Subscription type.
+        /// Subscription type. "LobbyChange" subscriptions allow a member or owner to receive notifications of lobby data, member or
+        /// owner changes. "LobbyInvite" subscriptions allow a player to receive invites to lobbies. A player does not need to be a
+        /// member of a lobby to receive lobby invites.
         /// </summary>
         public SubscriptionType Type;
     }

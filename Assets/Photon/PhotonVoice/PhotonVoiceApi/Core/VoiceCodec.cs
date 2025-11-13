@@ -18,15 +18,18 @@ namespace Photon.Voice
     {
         Config = 1,
         KeyFrame = 2,
-        PartialFrame = 4,
+        PartNotBeg = 4,
         EndOfStream = 8,
         FragNotBeg = 16,
         FragNotEnd = 32,
         FEC = 64,
+        PartNotEnd = 128,
 
         // 00 for unfragmented
         // 01 11 11 .. 11 10 for fragmented
         MaskFrag = FragNotBeg | FragNotEnd,
+
+        MaskPart = PartNotBeg | PartNotEnd,
     }
 
     /// <summary>Generic encoder interface.</summary>
@@ -82,7 +85,7 @@ namespace Photon.Voice
     public interface IDecoderDirect<B> : IDecoder
     {
         /// <summary>Callback to call when a new decoded data buffer is available.</summary>
-        Action<B> Output { get; set; }
+        Action<B> Output { set; }
     }
 
     /// <summary>Exception thrown if an unsupported audio sample type is encountered.</summary>
@@ -125,10 +128,33 @@ namespace Photon.Voice
 #if PHOTON_VOICE_VIDEO_ENABLE
         VideoVP8 = 21,
         VideoVP9 = 22,
-//        VideoAV1 = 23,
+        VideoAV1 = 23,
         VideoH264 = 31,
-//        VideoH265 = 32,
+        VideoH265 = 32,
 #endif
+        // reserved for user codec implementatoins
+        Custom1 = 101,
+        Custom2 = 102,
+        Custom3 = 103,
+        Custom4 = 104,
+        Custom5 = 105,
+        Custom6 = 106,
+        Custom7 = 107,
+        Custom8 = 108,
+        Custom9 = 109,
+    }
+
+    public static partial class Utility
+    {
+        public static bool IsAudio(this Codec c)
+        {
+            return c == Codec.AudioOpus;
+        }
+
+        public static bool IsVideo(this Codec c)
+        {
+            return (byte)c >= 20 && (byte)c < 100;
+        }
     }
 
     public enum ImageFormat
@@ -370,7 +396,7 @@ namespace Photon.Voice
             if (pool != null)
             {
                 Reset();
-                pool.Release(this);
+                pool.Free(this);
             }
             else
             {
@@ -415,7 +441,7 @@ namespace Photon.Voice
             if (pool != null)
             {
                 Reset();
-                pool.Release(this);
+                pool.Free(this);
             }
             else
             {
@@ -461,7 +487,7 @@ namespace Photon.Voice
             if (pool != null)
             {
                 Reset();
-                pool.Release(this);
+                pool.Free(this);
             }
             else
             {

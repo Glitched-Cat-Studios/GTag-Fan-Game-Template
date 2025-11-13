@@ -25,6 +25,12 @@ namespace Photon.Voice.Unity
         private static extern int PhotonVoice_WebAudioAudioOut_SetSpatialBlend(int handle, double x);
 
         [DllImport(lib_name, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern int PhotonVoice_WebAudioAudioOut_SetRefDistance(int handle, double x);
+
+        [DllImport(lib_name, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern int PhotonVoice_WebAudioAudioOut_SetMaxDistance(int handle, double x);
+
+        [DllImport(lib_name, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         private static extern int PhotonVoice_WebAudioAudioOut_SetListenerPosition(int handle, double x, double y, double z);
 
         [DllImport(lib_name, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -45,9 +51,9 @@ namespace Photon.Voice.Unity
         protected int channels;
         protected int bufferSamples;
 
-        // WebAudio graph is optimized when initialized for spatialBlend = 0 and spatialBlend = 1. In these cases, spatialBlend is constant.
-        // Set AudioSource.spatialBlend to the value between 0 and 1 and recreate WebAudioAudioOut (e.g. call Speaker.RestartPlayback()) to be able adjust spatialBlend dynamically.
-        // Set AudioSource.spatialBlend to 0 or 1 and recreate WebAudioAudioOut to swith to an optimized graph.
+        // WebAudio graph is optimized when initialized with spatialBlend = 0 and spatialBlend = 1. In these cases, spatialBlend is constant.
+        // Set AudioSource.spatialBlend to the value between 0 and 1 and recreate WebAudioAudioOut (e.g. call Speaker.RestartPlayback()) to be able to adjust spatialBlend dynamically.
+        // Set AudioSource.spatialBlend to 0 or 1 and recreate WebAudioAudioOut to switch to the optimized graph.
         public WebAudioAudioOut(PlayDelayConfig playDelayConfig, double spatialBlend, ILogger logger, string logPrefix, bool debugInfo)
         : base(false, playDelayConfig, logger, "[PV] [Unity] WebAudioAudioOut" + (logPrefix == "" ? "" : " " + logPrefix), debugInfo)
         {
@@ -123,6 +129,30 @@ namespace Photon.Voice.Unity
                 if (PhotonVoice_WebAudioAudioOut_SetSpatialBlend(handle, x) == 0)
                 {
                     spatialBlend = x;
+                }
+            }
+        }
+
+        private double refDistance = 1; // default PannerNode.refDistance
+        public void SetRefDistance(double x)
+        {
+            if (refDistance != x)
+            {
+                if (PhotonVoice_WebAudioAudioOut_SetRefDistance(handle, x) == 0)
+                {
+                    refDistance = x;
+                }
+            }
+        }
+
+        private double maxDistance = 10000; // default PannerNode.maxDistance
+        public void SetMaxDistance(double x)
+        {
+            if (maxDistance != x)
+            {
+                if (PhotonVoice_WebAudioAudioOut_SetMaxDistance(handle, x) == 0)
+                {
+                    maxDistance = x;
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace Photon.Voice.Unity
         private static extern int PhotonVoice_WebAudioMicIn_Start(int handle, string deviceId, Action<int, int, int, int> createCallbackStatic, Action<int, IntPtr, int> dataCallbackStatic);
 
         [DllImport(lib_name, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        private static extern void PhotonVoice_WebAudioMicIn_Stop(int hanle);
+        private static extern void PhotonVoice_WebAudioMicIn_Stop(int handle);
 
         ILogger logger;
         int handle;
@@ -84,7 +84,7 @@ namespace Photon.Voice.Unity
         private int sourceSamplingRate;
         private Action<float[]> pushCallback;
 
-        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory)
+        public void SetCallback(Action<float[]> callback, ObjectFactory<float[], int> bufferFactory, int optimalFrameSize)
         {
             this.pushCallback = callback;
         }

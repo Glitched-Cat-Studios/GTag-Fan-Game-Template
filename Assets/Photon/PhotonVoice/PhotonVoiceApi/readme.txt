@@ -1,6 +1,6 @@
 
 This is the readme for the Photon Voice API.
-(C) Exit Games GmbH 2023
+(C) Exit Games GmbH 2024
 
 
 Overview

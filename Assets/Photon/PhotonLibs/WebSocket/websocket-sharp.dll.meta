@@ -45,7 +45,7 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath:
+        PlaceholderPath: 
   - first:
       Android: Android
     second:
@@ -53,7 +53,7 @@ PluginImporter:
       settings:
         CPU: ARMv7
   - first:
-      Any:
+      Any: 
     second:
       enabled: 1
       settings: {}
@@ -120,7 +120,7 @@ PluginImporter:
       settings:
         CPU: AnyCPU
         DontProcess: False
-        PlaceholderPath:
+        PlaceholderPath: 
         SDK: AnySDK
         ScriptingBackend: AnyScriptingBackend
   - first:
@@ -133,8 +133,15 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        CompileFlags:
-        FrameworkDependencies:
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+        CompileFlags: 
+        FrameworkDependencies: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 130518
+  packageName: Photon Voice 2
+  packageVersion: 2.59
+  assetPath: Assets/Photon/PhotonLibs/WebSocket/websocket-sharp.dll
+  uploadId: 756092

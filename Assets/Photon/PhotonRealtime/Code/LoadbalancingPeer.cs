@@ -108,10 +108,10 @@ namespace Photon.Realtime
             {
                 websocketType = Type.GetType("ExitGames.Client.Photon.SocketWebTcp, Assembly-CSharp", false);
             }
-            #if UNITY_WEBGL
-            if (websocketType == null && this.DebugOut >= DebugLevel.WARNING)
+            #if UNITY_WEBGL && !UNITY_EDITOR
+            if (websocketType == null && this.DebugOut >= DebugLevel.ERROR)
             {
-                this.Listener.DebugReturn(DebugLevel.WARNING, "SocketWebTcp type not found in the usual Assemblies. This is required as wrapper for the browser WebSocket API. Make sure to make the PhotonLibs\\WebSocket code available.");
+                this.Listener.DebugReturn(DebugLevel.ERROR, "SocketWebTcp type not found in the usual Assemblies. This is required as wrapper for the browser WebSocket API. Make sure to make the PhotonLibs\\WebSocket code available.");
             }
             #endif
             #endif
@@ -122,10 +122,10 @@ namespace Photon.Realtime
                 this.SocketImplementationConfig[ConnectionProtocol.WebSocketSecure] = websocketType;
             }
 
-            #if NET_4_6 && (UNITY_EDITOR || !ENABLE_IL2CPP) && !NETFX_CORE
-            this.SocketImplementationConfig[ConnectionProtocol.Udp] = typeof(SocketUdpAsync);
-            this.SocketImplementationConfig[ConnectionProtocol.Tcp] = typeof(SocketTcpAsync);
-            #endif
+            //#if NET_4_6 && (UNITY_EDITOR || !ENABLE_IL2CPP) && !NETFX_CORE
+            //this.SocketImplementationConfig[ConnectionProtocol.Udp] = typeof(SocketUdpAsync);
+            //this.SocketImplementationConfig[ConnectionProtocol.Tcp] = typeof(SocketTcpAsync);
+            //#endif
         }
 
 
@@ -298,6 +298,7 @@ namespace Photon.Realtime
             }
 
             Dictionary<byte, object> op = new Dictionary<byte, object>();
+            SendOptions sendOptions = new SendOptions() { Reliability = true };
 
             if (!string.IsNullOrEmpty(opParams.RoomName))
             {
@@ -312,6 +313,11 @@ namespace Photon.Realtime
             if (opParams.ExpectedUsers != null && opParams.ExpectedUsers.Length > 0)
             {
                 op[ParameterCode.Add] = opParams.ExpectedUsers;
+                sendOptions.Encrypt = true;
+            }
+            if (opParams.Ticket != null)
+            {
+                op[ParameterCode.Ticket] = opParams.Ticket;
             }
 
             if (opParams.OnGameServer)
@@ -326,7 +332,7 @@ namespace Photon.Realtime
             }
 
             //this.Listener.DebugReturn(DebugLevel.INFO, "OpCreateRoom: " + SupportClass.DictionaryToString(op));
-            return this.SendOperation(OperationCode.CreateGame, op, SendOptions.SendReliable);
+            return this.SendOperation(OperationCode.CreateGame, op, sendOptions);
         }
 
         /// <summary>
@@ -348,6 +354,7 @@ namespace Photon.Realtime
                 this.Listener.DebugReturn(DebugLevel.INFO, "OpJoinRoom()");
             }
             Dictionary<byte, object> op = new Dictionary<byte, object>();
+            SendOptions sendOptions = new SendOptions() { Reliability = true };
 
             if (!string.IsNullOrEmpty(opParams.RoomName))
             {
@@ -371,6 +378,11 @@ namespace Photon.Realtime
             if (opParams.ExpectedUsers != null && opParams.ExpectedUsers.Length > 0)
             {
                 op[ParameterCode.Add] = opParams.ExpectedUsers;
+                sendOptions.Encrypt = true;
+            }
+            if (opParams.Ticket != null)
+            {
+                op[ParameterCode.Ticket] = opParams.Ticket;
             }
 
             if (opParams.OnGameServer)
@@ -385,7 +397,7 @@ namespace Photon.Realtime
             }
 
             //this.Listener.DebugReturn(DebugLevel.INFO, "OpJoinRoom: " + SupportClass.DictionaryToString(op));
-            return this.SendOperation(OperationCode.JoinGame, op, SendOptions.SendReliable);
+            return this.SendOperation(OperationCode.JoinGame, op, sendOptions);
         }
 
 
@@ -420,6 +432,7 @@ namespace Photon.Realtime
             }
 
             Dictionary<byte, object> opParameters = new Dictionary<byte, object>();
+            SendOptions sendOptions = new SendOptions() { Reliability = true };
             if (expectedRoomProperties.Count > 0)
             {
                 opParameters[ParameterCode.GameProperties] = expectedRoomProperties;
@@ -444,13 +457,18 @@ namespace Photon.Realtime
             if (opJoinRandomRoomParams.ExpectedUsers != null && opJoinRandomRoomParams.ExpectedUsers.Length > 0)
             {
                 opParameters[ParameterCode.Add] = opJoinRandomRoomParams.ExpectedUsers;
+                sendOptions.Encrypt = true;
+            }
+            if (opJoinRandomRoomParams.Ticket != null)
+            {
+                opParameters[ParameterCode.Ticket] = opJoinRandomRoomParams.Ticket;
             }
 
             opParameters[ParameterCode.AllowRepeats] = true; // enables temporary queueing for low ccu matchmaking situations
 
 
             //this.Listener.DebugReturn(DebugLevel.INFO, "OpJoinRandomRoom: " + SupportClass.DictionaryToString(opParameters));
-            return this.SendOperation(OperationCode.JoinRandomGame, opParameters, SendOptions.SendReliable);
+            return this.SendOperation(OperationCode.JoinRandomGame, opParameters, sendOptions);
         }
 
         /// <summary>
@@ -482,6 +500,7 @@ namespace Photon.Realtime
             }
 
             Dictionary<byte, object> opParameters = new Dictionary<byte, object>();
+            SendOptions sendOptions = new SendOptions() { Reliability = true };
             if (expectedRoomProperties.Count > 0)
             {
                 opParameters[ParameterCode.GameProperties] = expectedRoomProperties;    // used as filter. below, RoomOptionsToOpParameters has usePropertiesKey = true
@@ -506,6 +525,7 @@ namespace Photon.Realtime
             if (opJoinRandomRoomParams.ExpectedUsers != null && opJoinRandomRoomParams.ExpectedUsers.Length > 0)
             {
                 opParameters[ParameterCode.Add] = opJoinRandomRoomParams.ExpectedUsers;
+                sendOptions.Encrypt = true;
             }
             if (opJoinRandomRoomParams.Ticket != null)
             {
@@ -531,7 +551,7 @@ namespace Photon.Realtime
             }
 
             //this.Listener.DebugReturn(DebugLevel.INFO, "OpJoinRandomOrCreateRoom: " + SupportClass.DictionaryToString(opParameters, false));
-            return this.SendOperation(OperationCode.JoinRandomGame, opParameters, SendOptions.SendReliable);
+            return this.SendOperation(OperationCode.JoinRandomGame, opParameters, sendOptions);
         }
 
 
@@ -540,7 +560,7 @@ namespace Photon.Realtime
         /// </summary>
         /// <param name="becomeInactive">Async games can be re-joined (loaded) later on. Set to false, if you want to abandon a game entirely.</param>
         /// <param name="sendAuthCookie">WebFlag: Securely transmit the encrypted object AuthCookie to the web service in PathLeave webhook when available</param>
-        /// <returns>If the opteration can be send currently.</returns>
+        /// <returns>If the operation can be sent currently.</returns>
         public virtual bool OpLeaveRoom(bool becomeInactive, bool sendAuthCookie = false)
         {
             Dictionary<byte, object> opParameters = new Dictionary<byte, object>();
@@ -646,7 +666,8 @@ namespace Photon.Realtime
                 opParameters[ParameterCode.FindFriendsOptions] = options.ToIntFlags();
             }
 
-            return this.SendOperation(OperationCode.FindFriends, opParameters, SendOptions.SendReliable);
+            SendOptions sendOptions = new SendOptions() { Reliability = true, Encrypt = true };
+            return this.SendOperation(OperationCode.FindFriends, opParameters, sendOptions);
         }
 
         public bool OpSetCustomPropertiesOfActor(int actorNr, Hashtable actorProperties)
@@ -1127,6 +1148,8 @@ namespace Photon.Realtime
         protected internal JoinMode JoinMode;
         /// <summary>A list of users who are expected to join the room along with this client. Reserves slots for rooms with MaxPlayers value.</summary>
         public string[] ExpectedUsers;
+        /// <summary>Ticket for matchmaking. Provided by a plugin / server and contains a list of party members who should join the same room (among other things).</summary>
+        public object Ticket;
     }
 
 
@@ -1663,6 +1686,9 @@ namespace Photon.Realtime
 
         /// <summary>(188) Parameter key to let the server know it may queue the client in low-ccu matchmaking situations.</summary>
         public const byte AllowRepeats = 188;
+
+        /// <summary>(187) This optional parameter from the server configures the client to send analytics or not.</summary>
+        public const byte ReportQos = 187;
     }
 
 
@@ -1964,7 +1990,7 @@ namespace Photon.Realtime
         ///
         /// 1) On server, room property ABC is set to value FOO, which triggers notifications to all the clients telling them that the property changed.
         /// 2) While that notification is in flight, a client sets the ABC property to value BAR.
-        /// 3) Client receives notification from the server and changes it�s local copy of ABC to FOO.
+        /// 3) Client receives notification from the server and changes its local copy of ABC to FOO.
         /// 4) Server receives the set operation and changes the official value of ABC to BAR, but never notifies the client that sent the set operation that the value is now BAR.
         ///
         /// Without this option, the client that set the value to BAR never hears from the server that the official copy has been updated to BAR, and thus gets stuck with a value of FOO.

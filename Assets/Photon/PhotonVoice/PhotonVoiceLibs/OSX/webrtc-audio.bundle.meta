@@ -120,3 +120,10 @@ PluginImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 130518
+  packageName: Photon Voice 2
+  packageVersion: 2.59
+  assetPath: Assets/Photon/PhotonVoice/PhotonVoiceLibs/OSX/webrtc-audio.bundle
+  uploadId: 756092

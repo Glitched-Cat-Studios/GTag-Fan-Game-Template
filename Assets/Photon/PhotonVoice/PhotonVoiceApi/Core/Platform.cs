@@ -155,7 +155,11 @@ namespace Photon.Voice
         {
             // native platform-specific recorders
 #if UNITY_ANDROID && !UNITY_EDITOR
+#if PHOTON_VOICE_VIDEO_ANDROID_JAVA_API
             return new Unity.AndroidVideoRecorderSurfaceView(logger, info, camDevice.IDString, onReady);
+#else
+            return new Unity.AndroidNDKVideoRecorderSurfaceView(logger, info, camDevice.IDString, onReady);
+#endif
 #elif (UNITY_IOS || UNITY_VISIONOS) && !UNITY_EDITOR
             if (info.Codec == Codec.VideoH264)
             {
@@ -237,7 +241,11 @@ namespace Photon.Voice
         static public IVideoRecorder CreateVideoRecorderUnityTexture(ILogger logger, VoiceInfo info, DeviceInfo camDevice, Action<IVideoRecorder> onReady)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
+#if PHOTON_VOICE_VIDEO_ANDROID_JAVA_API
             return new Unity.AndroidVideoRecorderUnityTexture(logger, info, camDevice.IDString, onReady);
+#else
+            return new Unity.AndroidNDKVideoRecorderUnityTexture(logger, info, camDevice.IDString, onReady);
+#endif
 #elif (UNITY_IOS || UNITY_VISIONOS) && !UNITY_EDITOR
             if (info.Codec == Codec.VideoH264)
             {

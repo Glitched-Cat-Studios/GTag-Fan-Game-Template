@@ -123,6 +123,9 @@ namespace Photon.Voice.Unity
 
         private List<Speaker> linkedSpeakers = new List<Speaker>();
         private List<Recorder> recorders = new List<Recorder>();
+#if UNITY_WEBGL && !UNITY_EDITOR
+        private TimerWorker timerWorker; // to call frequently on a background page
+#endif
 
         #endregion
 
@@ -134,6 +137,9 @@ namespace Photon.Voice.Unity
             this.client.OpResponseReceived += this.OnOperationResponseReceived;
             base.Client = this.client;
             this.StartFallbackSendAckThread();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            this.timerWorker = new TimerWorker(() => { while (this.client.LoadBalancingPeer.DispatchIncomingCommands()) ; }, 50);
+#endif
         }
 
 #region Public Fields
@@ -329,7 +335,10 @@ namespace Photon.Voice.Unity
 
         protected virtual void FixedUpdate()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR // called in TimerWorker
+#else
             while (this.Client.LoadBalancingPeer.DispatchIncomingCommands()) ;
+#endif
         }
 
         private void LateUpdate()
@@ -349,6 +358,10 @@ namespace Photon.Voice.Unity
 
         protected virtual void OnDestroy()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            this.timerWorker.Stop();
+#endif
+
             this.client.StateChanged -= this.OnVoiceStateChanged;
             this.client.OpResponseReceived -= this.OnOperationResponseReceived;
             this.client.Disconnect();

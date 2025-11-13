@@ -245,7 +245,9 @@ namespace Photon.Voice
                     // voice client always disconnects for Leader's offline mode
                     if (this.Client.IsConnected && this.Client.State != ClientState.Disconnecting)
                     {
-                        this.Client.Disconnect();
+                        // this.Client.Disconnect();
+                        // Remove the player from the room to avoid an error when reconnecting without rejoining with the same UserId
+                        this.Client.OpLeaveRoom(false);
                     }
                     return;
                 }

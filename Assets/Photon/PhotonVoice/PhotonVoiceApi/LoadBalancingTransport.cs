@@ -174,12 +174,12 @@ namespace Photon.Voice
 
         protected virtual byte FrameCode => VoiceEvent.Code;
 
-        protected virtual object buildFrameMessage(byte voiceId, byte evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
+        protected virtual object buildFrameMessage(byte voiceId, ushort evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
         {
             return protocol.buildFrameMessage(voiceId, evNumber, frNumber, data, flags);
         }
 
-        public void SendFrame(ArraySegment<byte> data, FrameFlags flags, byte evNumber, byte frNumber, byte voiceId, int channelId, SendFrameParams par)
+        public void SendFrame(ArraySegment<byte> data, FrameFlags flags, ushort evNumber, byte frNumber, byte voiceId, int channelId, SendFrameParams par)
         {
             object content = buildFrameMessage(voiceId, evNumber, frNumber, data, flags);
 

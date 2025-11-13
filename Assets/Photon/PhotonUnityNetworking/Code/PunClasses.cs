@@ -685,8 +685,28 @@ namespace Photon.Pun
 
         /// <summary>
         /// Will read or write the value, depending on the stream's IsWriting value.
+        /// Char values are cast to short before being sent (receivers will simply get a short but can cast accordingly).
         /// </summary>
         public void Serialize(ref char value)
+        {
+            if (this.IsWriting)
+            {
+                this.writeData.Add((short)value);
+            }
+            else
+            {
+                if (this.readData.Length > this.currentItem)
+                {
+                    value = (char)((short)this.readData[this.currentItem]);
+                    this.currentItem++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Will read or write the value, depending on the stream's IsWriting value.
+        /// </summary>
+        public void Serialize(ref byte value)
         {
             if (this.IsWriting)
             {
@@ -696,7 +716,7 @@ namespace Photon.Pun
             {
                 if (this.readData.Length > this.currentItem)
                 {
-                    value = (char) this.readData[this.currentItem];
+                    value = (byte)this.readData[this.currentItem];
                     this.currentItem++;
                 }
             }

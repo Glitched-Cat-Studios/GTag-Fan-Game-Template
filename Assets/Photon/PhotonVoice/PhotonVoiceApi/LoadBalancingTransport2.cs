@@ -41,19 +41,23 @@ namespace Photon.Voice
 
         protected override byte FrameCode => VoiceEvent.FrameCode;
 
-        const int MAX_DATA_OFFSET = 5;
-        protected override object buildFrameMessage(byte voiceId, byte evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
+        const int MAX_DATA_OFFSET = 6;
+        protected override object buildFrameMessage(byte voiceId, ushort evNumber, byte frNumber, ArraySegment<byte> data, FrameFlags flags)
         {
             // this uses a pooled slice, which is released within the send method (here RaiseEvent at the bottom)
             ByteArraySlice frameData = this.LoadBalancingPeer.ByteArraySlicePool.Acquire(data.Count + MAX_DATA_OFFSET);
 
             int pos = 1;
             frameData.Buffer[pos++] = voiceId;
-            frameData.Buffer[pos++] = evNumber;
+            frameData.Buffer[pos++] = (byte)evNumber;
             frameData.Buffer[pos++] = (byte)flags;
-            if (evNumber != frNumber)  // save 1 byte if numbers match
+            if (evNumber != frNumber) // save 1 byte if numbers match
             {
                 frameData.Buffer[pos++] = (byte)frNumber;
+                if (evNumber >> 8 != 0) // save 1 byte if evNumber < 256, also backward compatibility
+                {
+                    frameData.Buffer[pos++] = (byte)(evNumber >> 8);
+                }
             }
             frameData.Buffer[0] = (byte)pos;
 
@@ -101,18 +105,21 @@ namespace Photon.Voice
             {
                 byte dataOffset = (byte)content[sliceOffset];
                 byte voiceId = (byte)content[sliceOffset + 1];
-                byte evNumber = (byte)content[sliceOffset + 2];
+                ushort evNumber = (byte)content[sliceOffset + 2];
                 FrameFlags flags = 0;
                 if (dataOffset > 3)
                 {
                     flags = (FrameFlags)content[3];
                 }
-                byte frNumber = evNumber;
+                byte frNumber = (byte)evNumber;
                 if (dataOffset > 4)
                 {
                     frNumber = content[4];
                 }
-
+                if (dataOffset > 5)
+                {
+                    evNumber += (ushort)(content[5] << 8);
+                }
                 FrameBuffer buffer;
                 if (slice != null)
                 {

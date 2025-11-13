@@ -72,7 +72,7 @@ namespace Photon.Voice.Windows
 
         // Supposed to be called once at voice initialization.
         // Otherwise recreate native object (instead of adding 'set callback' method to native interface)
-        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory)
+        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory, int optimalFrameSize)
         {
             this.bufferFactory = bufferFactory;
             this.pushCallback = callback;

@@ -73,7 +73,7 @@ namespace Photon.Voice
             }
 
             var voicePath = UnityEditor.AssetDatabase.GUIDToAssetPath(PhotonVoiceFolderGUID);
-            if (voicePath == null || voicePath == "")
+            if (voicePath == null || voicePath == "" || voicePath.Contains("Packages"))
             {
                 voicePath = "Assets/Photon/PhotonVoice";
             }

@@ -118,17 +118,14 @@ namespace Photon.Voice.Unity
         /// </remarks>
         public int PlayDelay
         {
-            get => this.playDelayConfig.Low;
+            get => this.playDelayConfig.Delay;
             set
             {
-                var l = value;
-                var h = value; // rely on automatic tolerance value
-                var m = 1000; // as in PlayDelayConfig.Default
-                if (this.playDelayConfig.Low != l || this.playDelayConfig.High != h || this.playDelayConfig.Max != m)
+                var x = this.playDelayConfig;
+                x.Delay = value;
+                if (!x.Equals(playDelayConfig))
                 {
-                    this.playDelayConfig.Low = l;
-                    this.playDelayConfig.High = h;
-                    this.playDelayConfig.Max = m;
+                    this.playDelayConfig = x;
                     this.RestartPlayback();
                 }
             }
@@ -198,7 +195,9 @@ namespace Photon.Voice.Unity
             return new AudioOutDummy<float>();
     #endif
 #endif
+#pragma warning disable CS0162 // Unreachable code detected (UNITY_WEBGL)
             return new UnityAudioOut(this.GetComponent<AudioSource>(), this.playDelayConfig, this.Logger, string.Empty, true);
+#pragma warning restore CS0162
         }
 
         internal bool Link(RemoteVoiceLink stream)
@@ -307,6 +306,8 @@ namespace Photon.Voice.Unity
             if (webOutAudioSource != null)
             {
                 webOut.SetVolume(webOutAudioSource.volume);
+                webOut.SetRefDistance(webOutAudioSource.minDistance);
+                webOut.SetMaxDistance(webOutAudioSource.maxDistance);
 
                 // spatialBlend is needed only in 3D mode
                 if (webOutListenerTransform != null)
@@ -327,7 +328,7 @@ namespace Photon.Voice.Unity
 
                 // Speaker position
                 p = gameObject.transform.position;
-                webOut.SetPosition(p.x, p.y, p.z);
+                webOut.SetPosition(p.x, -p.y, p.z);
             }
 #endif
         }

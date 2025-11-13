@@ -275,6 +275,19 @@ namespace PlayFab
         }
 
         /// <summary>
+        /// Deletes title-specific custom properties for a player
+        /// </summary>
+        public static void DeletePlayerCustomProperties(DeletePlayerCustomPropertiesRequest request, Action<DeletePlayerCustomPropertiesResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/DeletePlayerCustomProperties", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
         /// Executes a CloudScript function, with the 'currentPlayerId' set to the PlayFab ID of the authenticated player. The
         /// PlayFab ID is the entity ID of the player's master_player_account entity.
         /// </summary>
@@ -585,6 +598,19 @@ namespace PlayFab
         }
 
         /// <summary>
+        /// Retrieves a title-specific custom property value for a player.
+        /// </summary>
+        public static void GetPlayerCustomProperty(GetPlayerCustomPropertyRequest request, Action<GetPlayerCustomPropertyResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/GetPlayerCustomProperty", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
         /// Retrieves the player's profile
         /// </summary>
         public static void GetPlayerProfile(GetPlayerProfileRequest request, Action<GetPlayerProfileResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
@@ -661,6 +687,19 @@ namespace PlayFab
 
 
             PlayFabHttp.MakeApiCall("/Client/GetPlayerTrades", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
+        /// Retrieves the unique PlayFab identifiers for the given set of Battle.net account identifiers.
+        /// </summary>
+        public static void GetPlayFabIDsFromBattleNetAccountIds(GetPlayFabIDsFromBattleNetAccountIdsRequest request, Action<GetPlayFabIDsFromBattleNetAccountIdsResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/GetPlayFabIDsFromBattleNetAccountIds", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -826,6 +865,20 @@ namespace PlayFab
 
 
             PlayFabHttp.MakeApiCall("/Client/GetPlayFabIDsFromSteamIDs", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
+        /// Retrieves the unique PlayFab identifiers for the given set of Steam identifiers. The Steam identifiers are persona
+        /// names.
+        /// </summary>
+        public static void GetPlayFabIDsFromSteamNames(GetPlayFabIDsFromSteamNamesRequest request, Action<GetPlayFabIDsFromSteamNamesResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/GetPlayFabIDsFromSteamNames", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1085,6 +1138,19 @@ namespace PlayFab
         }
 
         /// <summary>
+        /// Links the Battle.net account associated with the token to the user's PlayFab account.
+        /// </summary>
+        public static void LinkBattleNetAccount(LinkBattleNetAccountRequest request, Action<EmptyResponse> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/LinkBattleNetAccount", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
         /// Links the custom identifier, generated by the title, to the user's PlayFab account
         /// </summary>
         public static void LinkCustomID(LinkCustomIDRequest request, Action<LinkCustomIDResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
@@ -1285,6 +1351,19 @@ namespace PlayFab
         }
 
         /// <summary>
+        /// Retrieves title-specific custom property values for a player.
+        /// </summary>
+        public static void ListPlayerCustomProperties(ListPlayerCustomPropertiesRequest request, Action<ListPlayerCustomPropertiesResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/ListPlayerCustomProperties", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
         /// Signs the user in using the Android device identifier, returning a session identifier that can subsequently be used for
         /// API calls which require an authenticated user
         /// </summary>
@@ -1309,6 +1388,19 @@ namespace PlayFab
 
 
             PlayFabHttp.MakeApiCall("/Client/LoginWithApple", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
+        /// Sign in the user with a Battle.net identity token
+        /// </summary>
+        public static void LoginWithBattleNet(LoginWithBattleNetRequest request, Action<LoginResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            request.TitleId = request.TitleId ?? callSettings.TitleId;
+
+
+            PlayFabHttp.MakeApiCall("/Client/LoginWithBattleNet", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1868,6 +1960,19 @@ namespace PlayFab
         }
 
         /// <summary>
+        /// Unlinks the related Battle.net account from the user's PlayFab account.
+        /// </summary>
+        public static void UnlinkBattleNetAccount(UnlinkBattleNetAccountRequest request, Action<EmptyResponse> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/UnlinkBattleNetAccount", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
         /// Unlinks the related custom identifier from the user's PlayFab account
         /// </summary>
         public static void UnlinkCustomID(UnlinkCustomIDRequest request, Action<UnlinkCustomIDResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
@@ -2134,6 +2239,19 @@ namespace PlayFab
 
 
             PlayFabHttp.MakeApiCall("/Client/UpdateCharacterStatistics", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+        }
+
+        /// <summary>
+        /// Updates the title-specific custom property values for a player
+        /// </summary>
+        public static void UpdatePlayerCustomProperties(UpdatePlayerCustomPropertiesRequest request, Action<UpdatePlayerCustomPropertiesResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+        {
+            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+            var callSettings = PlayFabSettings.staticSettings;
+            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+
+
+            PlayFabHttp.MakeApiCall("/Client/UpdatePlayerCustomProperties", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>

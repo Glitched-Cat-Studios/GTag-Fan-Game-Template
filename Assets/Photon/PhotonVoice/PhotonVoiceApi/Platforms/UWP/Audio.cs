@@ -75,7 +75,7 @@ namespace Photon.Voice.UWP
         /// <summary>Number of channels in the audio signal.</summary>
         public int Channels { get { return channels; } }
 
-        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory)
+        public void SetCallback(Action<short[]> callback, ObjectFactory<short[], int> bufferFactory, int optimalFrameSize)
         {
             init();
             if (Error != null)

@@ -4,6 +4,7 @@ namespace Photon.Voice.Fusion
     using global::Fusion;
     using Unity;
     using UnityEngine;
+    using LogLevel = Photon.Voice.LogLevel;
 
     [AddComponentMenu("Photon Voice/Fusion/Voice Network Object")]
     public class VoiceNetworkObject : NetworkBehaviour

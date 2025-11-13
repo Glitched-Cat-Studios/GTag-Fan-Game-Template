@@ -269,6 +269,10 @@ namespace PlayFab.EconomyModels
         /// </summary>
         public Rating Rating;
         /// <summary>
+        /// The real price the item was purchased for per marketplace.
+        /// </summary>
+        public RealMoneyPriceDetails RealMoneyPriceDetails;
+        /// <summary>
         /// The date of when the item will be available. If not provided then the product will appear immediately.
         /// </summary>
         public DateTime? StartDate;
@@ -452,11 +456,6 @@ namespace PlayFab.EconomyModels
         /// The Azure CDN URL for retrieval of the catalog item binary content.
         /// </summary>
         public string Url;
-    }
-
-    [Serializable]
-    public class ContentFeed : PlayFabBaseModel
-    {
     }
 
     public enum CountryCode
@@ -999,7 +998,7 @@ namespace PlayFab.EconomyModels
         public string IdempotencyId;
         /// <summary>
         /// The operations to run transactionally. The operations will be executed in-order sequentially and will succeed or fail as
-        /// a batch. Up to 10 operations can be added.
+        /// a batch. Up to 50 operations can be added.
         /// </summary>
         public List<InventoryOperation> Operations;
     }
@@ -1186,6 +1185,15 @@ namespace PlayFab.EconomyModels
         /// List of item alternate IDs.
         /// </summary>
         public List<CatalogAlternateId> AlternateIds;
+        /// <summary>
+        /// An opaque token used to retrieve the next page of items created by the caller, if any are available. Should be null on
+        /// initial request.
+        /// </summary>
+        public string ContinuationToken;
+        /// <summary>
+        /// Number of items to retrieve. This value is optional. Default value is 10.
+        /// </summary>
+        public int? Count;
         /// <summary>
         /// The optional custom tags associated with the request (e.g. build number, external trace identifiers, etc.).
         /// </summary>
@@ -1390,6 +1398,10 @@ namespace PlayFab.EconomyModels
         /// The entity to perform this action on.
         /// </summary>
         public EntityKey Entity;
+        /// <summary>
+        /// The token to get the status of the inventory operation.
+        /// </summary>
+        public string OperationToken;
     }
 
     [Serializable]
@@ -1903,11 +1915,6 @@ namespace PlayFab.EconomyModels
     }
 
     [Serializable]
-    public class PayoutDetails : PlayFabBaseModel
-    {
-    }
-
-    [Serializable]
     public class Permissions : PlayFabBaseModel
     {
         /// <summary>
@@ -2139,6 +2146,30 @@ namespace PlayFab.EconomyModels
     [Serializable]
     public class RealMoneyPriceDetails : PlayFabBaseModel
     {
+        /// <summary>
+        /// The 'AppleAppStore' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> AppleAppStorePrices;
+        /// <summary>
+        /// The 'GooglePlay' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> GooglePlayPrices;
+        /// <summary>
+        /// The 'MicrosoftStore' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> MicrosoftStorePrices;
+        /// <summary>
+        /// The 'NintendoEShop' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> NintendoEShopPrices;
+        /// <summary>
+        /// The 'PlayStationStore' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> PlayStationStorePrices;
+        /// <summary>
+        /// The 'Steam' price amount per CurrencyCode. 'USD' supported only.
+        /// </summary>
+        public Dictionary<string,int> SteamPrices;
     }
 
     /// <summary>
@@ -2167,6 +2198,50 @@ namespace PlayFab.EconomyModels
 
     [Serializable]
     public class RedeemAppleAppStoreInventoryItemsResponse : PlayFabResultCommon
+    {
+        /// <summary>
+        /// The list of failed redemptions from the external marketplace.
+        /// </summary>
+        public List<RedemptionFailure> Failed;
+        /// <summary>
+        /// The list of successful redemptions from the external marketplace.
+        /// </summary>
+        public List<RedemptionSuccess> Succeeded;
+        /// <summary>
+        /// The Transaction IDs associated with the inventory modifications
+        /// </summary>
+        public List<string> TransactionIds;
+    }
+
+    /// <summary>
+    /// The request for a redeem Apple AppStore With JWS
+    /// </summary>
+    [Serializable]
+    public class RedeemAppleAppStoreWithJwsInventoryItemsRequest : PlayFabRequestCommon
+    {
+        /// <summary>
+        /// The id of the entity's collection to perform this action on. (Default="default")
+        /// </summary>
+        public string CollectionId;
+        /// <summary>
+        /// The optional custom tags associated with the request (e.g. build number, external trace identifiers, etc.).
+        /// </summary>
+        public Dictionary<string,string> CustomTags;
+        /// <summary>
+        /// The entity to perform this action on.
+        /// </summary>
+        public EntityKey Entity;
+        /// <summary>
+        /// The JWS representation of a transaction.
+        /// </summary>
+        public List<string> JWSTransactions;
+    }
+
+    /// <summary>
+    /// The response for a redeem Apple AppStore With JWS
+    /// </summary>
+    [Serializable]
+    public class RedeemAppleAppStoreWithJwsInventoryItemsResponse : PlayFabResultCommon
     {
         /// <summary>
         /// The list of failed redemptions from the external marketplace.
@@ -2408,26 +2483,26 @@ namespace PlayFab.EconomyModels
         /// </summary>
         public string FailureDetails;
         /// <summary>
+        /// The Marketplace Alternate ID being redeemed.
+        /// </summary>
+        public string MarketplaceAlternateId;
+        /// <summary>
         /// The transaction id in the external marketplace.
         /// </summary>
         public string MarketplaceTransactionId;
-        /// <summary>
-        /// The ID of the offer being redeemed.
-        /// </summary>
-        public string OfferId;
     }
 
     [Serializable]
     public class RedemptionSuccess : PlayFabBaseModel
     {
         /// <summary>
+        /// The Marketplace Alternate ID being redeemed.
+        /// </summary>
+        public string MarketplaceAlternateId;
+        /// <summary>
         /// The transaction id in the external marketplace.
         /// </summary>
         public string MarketplaceTransactionId;
-        /// <summary>
-        /// The ID of the offer being redeemed.
-        /// </summary>
-        public string OfferId;
         /// <summary>
         /// The timestamp for when the redeem was completed.
         /// </summary>
@@ -2549,10 +2624,6 @@ namespace PlayFab.EconomyModels
         /// </summary>
         public EntityKey ReviewerEntity;
         /// <summary>
-        /// Deprecated. Use ReviewerEntity instead. This property will be removed in a future release.
-        /// </summary>
-        public string ReviewerId;
-        /// <summary>
         /// The ID of the review.
         /// </summary>
         public string ReviewId;
@@ -2624,15 +2695,6 @@ namespace PlayFab.EconomyModels
         /// The ID of the review to take down.
         /// </summary>
         public string ReviewId;
-    }
-
-    [Serializable]
-    public class ScanResult : PlayFabBaseModel
-    {
-        /// <summary>
-        /// The URL of the item which failed the scan.
-        /// </summary>
-        public string Url;
     }
 
     [Serializable]
@@ -2790,15 +2852,6 @@ namespace PlayFab.EconomyModels
     }
 
     [Serializable]
-    public class SubscriptionDetails : PlayFabBaseModel
-    {
-        /// <summary>
-        /// The length of time that the subscription will last in seconds.
-        /// </summary>
-        public double DurationInSeconds;
-    }
-
-    [Serializable]
     public class SubtractInventoryItemsOperation : PlayFabBaseModel
     {
         /// <summary>
@@ -2916,6 +2969,14 @@ namespace PlayFab.EconomyModels
         /// </summary>
         public string ApiName;
         /// <summary>
+        /// Additional details about the transaction. Null if it was not a clawback operation.
+        /// </summary>
+        public TransactionClawbackDetails ClawbackDetails;
+        /// <summary>
+        /// The custom tags associated with this transactions.
+        /// </summary>
+        public Dictionary<string,string> CustomTags;
+        /// <summary>
         /// The type of item that the the operation occurred on.
         /// </summary>
         public string ItemType;
@@ -2947,6 +3008,15 @@ namespace PlayFab.EconomyModels
         /// Additional details about the transaction. Null if it was not a transfer operation.
         /// </summary>
         public TransactionTransferDetails TransferDetails;
+    }
+
+    [Serializable]
+    public class TransactionClawbackDetails : PlayFabBaseModel
+    {
+        /// <summary>
+        /// The id of the clawed back operation.
+        /// </summary>
+        public string TransactionIdClawedback;
     }
 
     [Serializable]
@@ -2985,6 +3055,14 @@ namespace PlayFab.EconomyModels
     [Serializable]
     public class TransactionPurchaseDetails : PlayFabBaseModel
     {
+        /// <summary>
+        /// The friendly id of the item that was purchased.
+        /// </summary>
+        public string ItemFriendlyId;
+        /// <summary>
+        /// The id of the item that was purchased.
+        /// </summary>
+        public string ItemId;
         /// <summary>
         /// The friendly id of the Store the item was purchased from or null.
         /// </summary>

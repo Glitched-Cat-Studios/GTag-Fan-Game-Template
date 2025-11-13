@@ -465,7 +465,20 @@ static OSStatus    performRender (void                         *inRefCon,
         inputCallback.inputProc = performInput;
         inputCallback.inputProcRefCon = &cd;
         XThrowIfError(AudioUnitSetProperty(cd.rioUnit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, 1, &inputCallback,sizeof(inputCallback)), "couldn't set capture callback on AURemoteIO");
-                
+
+        if (@available(iOS 17.0, *)) {
+            AUVoiceIOOtherAudioDuckingConfiguration duckingConfig = {
+                .mEnableAdvancedDucking = false,
+                //.mDuckingLevel = kAUVoiceIOOtherAudioDuckingLevelDefault
+                .mDuckingLevel = kAUVoiceIOOtherAudioDuckingLevelMin
+            };
+            int result = AudioUnitSetProperty(cd.rioUnit, kAUVoiceIOProperty_OtherAudioDuckingConfiguration, kAudioUnitScope_Global, 0, &duckingConfig, sizeof(duckingConfig));
+            XThrowIfError(result, "failed to set ducking config");
+            NSLog(@"[PV] [AI] ducking config is OK\n");
+        } else {
+            NSLog(@"[PV] [AI] [WARN] ducking config is only available on iOS 17.0or newer\n");
+        }
+        
         // Initialize the AURemoteIO instance
         
         // from https://chromium.googlesource.com/external/webrtc/+/9eeb6240c93efe2219d4d6f4cf706030e00f64d7/webrtc/modules/audio_device/ios/voice_processing_audio_unit.mm

@@ -106,7 +106,9 @@ namespace Photon.Voice.Unity
             VoIP,
         }
         [SerializeField]
+#pragma warning disable CS0414 // The field is assigned but its value is never used (used in RecorderEditor)
         private EditorIosAudioSessionPreset editorAudioSessionPreset = EditorIosAudioSessionPreset.Game;
+#pragma warning restore CS0414
 #endif
 
         [SerializeField]

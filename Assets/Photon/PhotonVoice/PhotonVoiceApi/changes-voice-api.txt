@@ -1,8 +1,62 @@
 Photon Voice API Change Log
 
+v2.59 (May 13, 2025)
+Core:
+   CHANGED: incoming events ring buffer can be of arbitrary size to better support high bitrate video streams
+   ADDED: VoiceCreateOptions.EventBufSize property used to specify the receiver buffer size during voice creation by the sender
+   CHANGED: RemoteVoice Decoder.Input() call wrapped in try/catch: unhandled exceptions can result in a buffer element being locked and the receiveBytes thread forever trying to acquire it
+   REMOVED: unnecessary Output getter from IDecoderDirect
+   FIXED: continuous buffer allocations by audio sources with variable buffer size
+   BREAKING: added IAudioPusher<T>.SetCallback() 'optimalFrameSize' parameter, hinting the preferable frame size to the source (actually used only in AndroidAudioInAEC)
+   ADDED: VoiceClient.SetRemoteVoiceDelayFrames() overload setting the delay for Codec enum elements that matches the condition specified in the predicate function (1 call for multiple codecs)
+   ADDED: ByteStreamEncoder and ByteStreamDecoder for steaming byte buffers without processing
+   ADDED: Custom1 - Custom9 items in Codec enum for user codec implementations
+WebGL:
+   BREAKING: panner node rolloff parameters removed from WebAudioAudioOut() constructor and set via new SetRefDistance() and SetMaxDistance() methods from Update() (similar to volume parameter)
+   FIXED: TimeWorker crash during stop() call
+
+v2.58 (March 03, 2025)
+Core:
+   ADDED: Codec enum extension methods IsAudio() and IsVideo() in a new Voice.Utility static class
+   ADDED: AudioOutDelayControl.Delay property: a simplified delay API
+   FIXED: LocalVoice did not save the contents of the 1st config frame and failed to decode video streams with non-repeating config frame
+   FIXED: noticeable audio playback start delay when resuming transmission after intentional pause (by sender or with Interest Groups): RemoteVoice considers an incoming frame as current rather than late if the gap with the previous frame is large and continues playback instead of waiting for a "valid" frame
+   FIXED: possible noisy logging before the 1st packet arrives caused by useless ring buffer scan: decodeQueue() call moved after the synchronization wait call in decodeThread
+   FIXED: AudioOutDelayControl.Service() clears the buffer correctly even if it's called rarely (once per sec. for WebGl)
+   CHANGED: AudioOutDelayControl buffer size is at least 2 sec. (for WebGL)
+   FIXED: AudioOutDelayControl buffer minimal size check used the wrong value and never worked
+Unity:
+   FIXED: UnityAudioOut zeroes the clip after creation because it may contain non-zero data (e.g. from previously created clip initialized with pcmreadercallback).
+Android:
+   CHANGED: audio capture session is initialized and destroyed asynchronously to prevent ui freezes
+   FIXED: occasional freeze of decoded video display: DecoderTexture surfaceTexture OnFrameAvailableListener stopped being called if there was more than 1 such call between updateTexImage() calls
+   ADDED: Camera and Encoder implementations using NDK APIs
+   FIXED: Java APIs based Camera implementation is not compatible with Unity's GameActivity
+   CHANGED: Platform.CreateDefaultVideoRecorder() uses new AndroidNDKVideoRecorderSurfaceView()
+   CHANGED: Platform.CreateVideoRecorderUnityTexture() uses new AndroidNDKVideoRecorderUnityTexture()
+   NOTE: define PHOTON_VOICE_VIDEO_ANDROID_JAVA_API to use old implementations
+   BREAKING: minSdkVersion is 28
+WebGL:
+   ADDED: TimerWorker utility module calling the given callback with the given interval from a worker message handler to workaround browser js execution throttling on a background page
+   FIXED: audio plays without interruption in background browser page due to Photon Realtime update to v4.1.8.14 and the following change
+   CHANGED: VoiceConnection incoming packet dispatch call is triggered frequently enough by TimerWorker, not in FixedUpdate() which is called only once per sec. in background browser page
+iOS and Mac:
+   CHANGED: AudioIn libraries set other apps ducking mode to minimum
+
+v2.57 (December 13, 2024)
+WebGL:
+   ADDED: WebAudioAudioOut spatial ref and max distances control via AudioSource min and max distances
+FMOD:
+   FIXED: FMOD always used device 0 for recording
+
+v2.56 (August 19, 2024)
+WebGL:
+   FIXED: WebGL Emscripten Malloc._malloc and Malloc._free replaced with _malloc and _free as these symbols were removed from Module in Emscripten 3.1.31
+   CHANGED: deprecated Emscripten Module.dynCall_... replaced with makeDynCall macro
+
 v2.55 (February 26, 2024)
 Core:
-   ADDED: VisionOS support (Opus and WebRTC Audio libraries)
+   ADDED: visionOS support (Opus and WebRTC Audio libraries)
    BREAKING: ILogger.Log*() methods replaced with LogLevel enum and single Log() method accepting logging level
    BREAKING: added ILogger.Level property, that Voice code can check to avoid unnecessary Log() methods calls
    ADDED: LogLevel.Trace logging level

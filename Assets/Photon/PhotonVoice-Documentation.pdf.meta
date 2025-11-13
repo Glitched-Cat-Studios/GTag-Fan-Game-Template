@@ -1,7 +1,14 @@
 fileFormatVersion: 2
-guid: 227e6e418cf86db43bfa5b48de6698c2
+guid: 1ba7aa7e7433460459fd30414d455a6e
 DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 130518
+  packageName: Photon Voice 2
+  packageVersion: 2.59
+  assetPath: Assets/Photon/PhotonVoice-Documentation.pdf
+  uploadId: 756092
